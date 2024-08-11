@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using BusinessPortal.Entities;
-using System;
+﻿using BusinessPortal.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessPortal.Data.Seed
 {

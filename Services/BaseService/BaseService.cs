@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BusinessPortal.Data;
+﻿using BusinessPortal.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessPortal.Services

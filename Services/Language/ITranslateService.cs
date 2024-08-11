@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using BusinessPortal.Entities;
+﻿using BusinessPortal.Entities;
 
 namespace BusinessPortal.Services
 {

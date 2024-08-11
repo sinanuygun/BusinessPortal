@@ -1,8 +1,6 @@
 ﻿using BusinessPortal.Data;
 using BusinessPortal.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
 
 namespace BusinessPortal.Services
 {
@@ -28,12 +26,12 @@ namespace BusinessPortal.Services
             {
                 WorkflowTemplateId = workflowTemplateId,
                 UserId = userId,
-                Status = "Pending",
+                Status = WorkflowStatus.Pending, // Enum kullanımı
                 StartedAt = DateTime.Now,
                 StepInstances = workflowTemplate.Steps.Select(step => new WorkflowStepInstance
                 {
                     WorkflowStepId = step.Id,
-                    Status = "Pending"
+                    Status = WorkflowStatus.Pending // Enum kullanımı
                 }).ToList()
             };
 
@@ -51,20 +49,20 @@ namespace BusinessPortal.Services
                 throw new Exception("Step instance not found");
             }
 
-            stepInstance.Status = "Completed";
+            stepInstance.Status = WorkflowStatus.Completed; // Enum kullanımı
             stepInstance.CompletedAt = DateTime.Now;
 
             _context.WorkflowStepInstances.Update(stepInstance);
             _context.SaveChanges();
 
-            // Check if all steps are completed to update the workflow status
+            // Tüm adımların tamamlanıp tamamlanmadığını kontrol et
             var workflowInstance = _context.WorkflowInstances
                                            .Include(wi => wi.StepInstances)
                                            .FirstOrDefault(wi => wi.Id == workflowInstanceId);
 
-            if (workflowInstance != null && workflowInstance.StepInstances.All(si => si.Status == "Completed"))
+            if (workflowInstance != null && workflowInstance.StepInstances.All(si => si.Status == WorkflowStatus.Completed))
             {
-                workflowInstance.Status = "Completed";
+                workflowInstance.Status = WorkflowStatus.Completed; // Enum kullanımı
                 workflowInstance.CompletedAt = DateTime.Now;
                 _context.WorkflowInstances.Update(workflowInstance);
                 _context.SaveChanges();

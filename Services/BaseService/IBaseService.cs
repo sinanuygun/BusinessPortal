@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BusinessPortal.Services
+﻿namespace BusinessPortal.Services
 {
     public interface IBaseService<TEntity> where TEntity : class
     {

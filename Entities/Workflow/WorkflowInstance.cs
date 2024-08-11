@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BusinessPortal.Entities
+﻿namespace BusinessPortal.Entities
 {
     public class WorkflowInstance
     {

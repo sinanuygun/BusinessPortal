@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Transactions;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BusinessPortal.Entities
 {

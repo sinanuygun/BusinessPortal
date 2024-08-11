@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BusinessPortal.Entities
+﻿namespace BusinessPortal.Entities
 {
     public class WorkflowStep
     {
