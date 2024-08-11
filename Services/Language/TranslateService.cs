@@ -1,5 +1,6 @@
 ﻿using BusinessPortal.Data;
 using BusinessPortal.Entities;
+using Services.Language;
 
 namespace BusinessPortal.Services
 {
@@ -13,24 +14,40 @@ namespace BusinessPortal.Services
             _context = context;
         }
 
-        public Translation GetTranslate(string key, string languageCode)
+        public async Task<Translation> GetTranslate(string key, string languageCode)
         {
+            var LanguageControl = _context.Languages.Where(x => x.Code == languageCode).FirstOrDefault();
+            if (LanguageControl == null)
+            {
+                return null;
+            }
+
             var translation = GetTranslationByKeyAndLanguageCode(key, languageCode);
             if (translation != null)
             {
                 return translation;
             }
-
-            var defaultTranslation = GetTranslationByKeyAndLanguageCode(key, DefaultLanguageCode);
-            if (defaultTranslation != null)
+            else
             {
-                SaveTranslation(key, defaultTranslation.Value, languageCode);
-                return new Translation { Key = key, Value = defaultTranslation.Value, LanguageId = GetLanguageIdByCode(languageCode).Value };
+                var defaultLanguageControl = GetTranslationByKeyAndLanguageCode(key, DefaultLanguageCode);
+                if (defaultLanguageControl == null)
+                {
+                    SaveTranslation(key, key, DefaultLanguageCode, false);
+                }
+
+
+                bool updateRequired = true;
+                if (languageCode!=DefaultLanguageCode)
+                {
+                    var onlineTranslation = await GetOnlineTranslation(key, languageCode);
+                    SaveTranslation(key, onlineTranslation, languageCode, true);
+                    key=onlineTranslation;
+                }
+
+                return new Translation { Key = key, Value = key, LanguageId = GetLanguageIdByCode(languageCode).Value, LanguageCode=languageCode, UpdateRequired=updateRequired };
             }
 
-            var onlineTranslation = GetOnlineTranslation(key, languageCode);
-            SaveTranslation(key, onlineTranslation, languageCode);
-            return new Translation { Key = key, Value = onlineTranslation, LanguageId = GetLanguageIdByCode(languageCode).Value };
+
         }
 
         public IEnumerable<Translation> GetAllLanguageValue(string languageCode)
@@ -49,12 +66,18 @@ namespace BusinessPortal.Services
             return _dbSet.FirstOrDefault(t => t.Key == key && t.LanguageId == language.Id);
         }
 
-        private string GetOnlineTranslation(string key, string languageCode)
+        private async Task<string> GetOnlineTranslation(string key, string languageCode)
         {
-            return $"[Online Translation for '{key}' in '{languageCode}']";
+            if (DefaultLanguageCode!=languageCode)
+            {
+                var translatorService = new BingTranslatorService();
+                key = await translatorService.TranslateText(key, DefaultLanguageCode, languageCode);
+            }
+
+            return key;
         }
 
-        private void SaveTranslation(string key, string value, string languageCode)
+        private void SaveTranslation(string key, string value, string languageCode, bool updateRequired)
         {
             var languageId = GetLanguageIdByCode(languageCode);
             if (languageId != null)
@@ -63,7 +86,9 @@ namespace BusinessPortal.Services
                 {
                     Key = key,
                     Value = value,
-                    LanguageId = languageId.Value
+                    LanguageId = languageId.Value,
+                    LanguageCode = languageCode,
+                    UpdateRequired = updateRequired
                 };
                 _context.Translations.Add(translation);
                 _context.SaveChanges();

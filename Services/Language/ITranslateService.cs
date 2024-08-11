@@ -6,6 +6,6 @@ namespace BusinessPortal.Services
     {
         IEnumerable<Translation> GetAllLanguageValue(string languageCode);
 
-        Translation GetTranslate(string key, string languageCode);
+        Task<Translation> GetTranslate(string key, string languageCode);
     }
 }

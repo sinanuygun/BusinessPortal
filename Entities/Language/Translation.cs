@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BusinessPortal.Entities
 {
@@ -16,10 +17,13 @@ namespace BusinessPortal.Entities
         [MaxLength(500)]
         public string Value { get; set; } // Translation value (e.g., "Hoşgeldiniz")
 
-        [Required]
-        public int LanguageId { get; set; } // Foreign key to Language
+        [ForeignKey("Language")]
+        public int LanguageId { get; set; }
+        public string LanguageCode { get; set; }
+        [JsonIgnore]
+        public Language Language { get; set; }
 
-        [ForeignKey("LanguageId")]
-        public Language Language { get; set; } // Navigation property to Language
+        [Required]
+        public bool UpdateRequired { get; set; }
     }
 }
