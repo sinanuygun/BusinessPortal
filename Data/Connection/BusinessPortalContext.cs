@@ -21,7 +21,12 @@ namespace BusinessPortal.Data
         #region Log
         public DbSet<Log> Logs { get; set; }
         #endregion
-
+        #region Workflow
+        public DbSet<WorkflowTemplate> WorkflowTemplates { get; set; }
+        public DbSet<WorkflowStep> WorkflowSteps { get; set; }
+        public DbSet<WorkflowInstance> WorkflowInstances { get; set; }
+        public DbSet<WorkflowStepInstance> WorkflowStepInstances { get; set; }
+        #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -43,6 +48,10 @@ namespace BusinessPortal.Data
 
             modelBuilder.Entity<Log>()
                 .Property(l => l.LogLevel)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<WorkflowInstance>()
+                .Property(wi => wi.Status)
                 .HasConversion<string>();
 
             RoleSeed.Seed(modelBuilder);
